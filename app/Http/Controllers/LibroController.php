@@ -37,11 +37,11 @@ class LibroController extends Controller
     public function store(Request $request)
     {   
         $libro = new Libro();
-        $libro -> tituloLibro = $request->get('tituloLibro');
-        $libro -> description = $request->get('description');
-        $libro -> categoria = $request->get('categoria');
-        $libro -> autores = $request->get('autores');
-        $libro -> editorial = $request->get('editorial');
+        $libro -> tituloLibro = $request->input('tituloLibro');
+        $libro -> description = $request->input('description');
+        $libro -> categoria = $request->input('categoria');
+        $libro -> autores = $request->input('autores');
+        $libro -> editorial = $request->input('editorial');
         $libro -> save();
         return response()->json($libro);
     }
