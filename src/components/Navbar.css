@@ -1,4 +1,4 @@
-.navbar {
+.navbarS {
     background: linear-gradient(90deg, rgb(28, 27, 27) 0%, rgb(26, 23, 23) 100%);
     height: 80px;
     display: flex;
@@ -7,7 +7,7 @@
     font-size: 1.2rem;
   }
   
-  .navbar-logo {
+  .navbarS-logo {
     color: #fff;
     justify-self: start;
     margin-left: 20px;

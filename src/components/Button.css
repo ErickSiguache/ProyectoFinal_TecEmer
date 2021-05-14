@@ -2,7 +2,7 @@
     --primary: #1888ff;
   }
   
-  .btn {
+  .btnC {
     padding: 8px 20px;
     border-radius: 4px;
     outline: none;
@@ -13,7 +13,7 @@
     background-color: var(--primary);
   }
   
-  .btn:hover {
+  .btnC:hover {
     padding: 6px 18px;
     transition: all 0.3s ease-out;
     background-color: transparent;
