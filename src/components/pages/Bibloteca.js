@@ -42,7 +42,7 @@ class Bibloteca extends Component {
                     <div class="contenido-card">
 		                  <h3> {nombre.tituloLibro} </h3>
 		                  <p> {nombre.description} </p>
-		                  <a href="#">Leer Màs</a>
+		                  <a href="#">Leer Más</a>
 	                  </div>
                   </div>
                 </div>
