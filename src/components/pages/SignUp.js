@@ -1,42 +1,34 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import '../../App.css';
-import { Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import { Container } from 'reactstrap';
+import Cookies from 'universal-cookie';
+import logo from '../../images/logo.png';
 
-let url="http://127.0.0.1:8000/api/libro/";
+const url="http://127.0.0.1:8000/api/login/";
+const cookies = new Cookies();
 
 class SignUp extends Component {
   constructor(props) {
     super(props);
     this.state =({
       data: [],
-      modalInsertar: false,
-      modalEliminar: false,
       form:{
-        _id: '',
-        nombre: '',
-        descripcion: '',
-        categoria: '',
-        autor: '',
-        editorial: '',
-        tipoModal: ''
+        username: '',
+        password: '',
+        TipUser: ''
       }
     })
   }
-  
+  //Cargar datos en tiempo real
   componentDidMount() {
-    axios.get(url)
-      .then(response => {
-        console.log(response.data)
-          this.setState({
-            data: response.data.libros
-          })
-    })
-    .catch(error => {
-      console.log(error)
-    })
+      if(cookies.get('TipoU') === "Cliente"){
+        window.location.href='./';
+      }else if(cookies.get('TipoU') === "Administrador"){
+        window.location.href='./';
+      }
   }
-
+  //Toma los datos en tiempo real
   handleChange=async e=>{
     e.persist();
     await this.setState({
@@ -47,140 +39,89 @@ class SignUp extends Component {
     });
     console.log(this.state.form);
     }
-    
 
-  peticionPut=()=>{
-    axios.put(url+this.state.form._id, this.state.form).then(response=>{
-      this.modalInsertar();
-      this.componentDidMount();
-    })
-  }
-  peticionPost=async()=>{
-    delete this.state.form._id;
-   await axios.post(url,this.state.form).then(response=>{
-      this.modalInsertar();
-      this.componentDidMount();
-    }).catch(error=>{
-      console.log(error.message);
-    })
-  }
-  
-  peticionDelete=()=>{
-    axios.delete(url+this.state.form._id).then(response=>{
-      this.setState({modalEliminar: false});
-      this.componentDidMount();
-    })
-  }
-  modalInsertar=()=>{
-    this.setState({modalInsertar: !this.state.modalInsertar});
-  }
-  seleccionarEmpresa=(nombre)=>{
-    this.setState({
-      tipoModal: 'actualizar',
-      form: {
-        _id: nombre._id,
-        tituloLibro: nombre.tituloLibro,
-        description: nombre.description,
-        categoria: nombre.categoria,
-        autores: nombre.autores,
-        editorial: nombre.editorial
+    handleChange=async e=>{
+      e.persist();
+      await this.setState({
+        form:{
+          ...this.state.form,
+          [e.target.name]: e.target.value
+        }
+      });
+      console.log(this.state.form);
       }
-    })
-  }
 
+      //Proceso de peticion a la api
+      IniciarSesion=async()=>{
+       await axios.post(url,this.state.form).then(response=>{
+          console.log(response.data);
+          if(response.data === "Usuario no existe"){
+            alert("Debe ingresar los datos correctamente")
+          }else{
+            console.log(response.data);
+            cookies.set('Token', response.data, {path: "/"});
+            if(this.state.form.TipUser === "Cliente"){
+              cookies.set('TipoU', this.state.form.TipUser, {path: "/"});
+              alert("Bienvenido, disfruta de nuestros libros");
+              window.location.href = "./";
+            }else if(this.state.form.TipUser === "Administrador"){
+              cookies.set('TipoU', this.state.form.TipUser, {path: "/"});
+              alert("Bienvenido administrador");
+              window.location.href = "./";
+            }else if(this.state.form.TipUser === "Seleccione"){
+              alert("Debe de seleccionar un tipo de usuario");
+            }
+          }
+        }).catch(error=>{
+          console.log(error.message);
+        })
+      }
+      //Renderizado del formulario
   render() {
-    const {form}=this.state;
     return(
       <>
-        <h2 className="title-cards"> Administracion de datos </h2>
-        <br></br>
-        <center><button className="btn btn-success" onClick={()=>{this.setState({form: null, tipoModal: 'insertar'}); this.modalInsertar()}}>Agregar Libro </button></center>
-        <br></br><br></br>
-        <div id="main-container">
-          <table>
-            <thead>
-              <tr>
-                <th> ID </th>
-                <th> Titulo </th>
-                <th> Description</th>
-                <th> Categoria </th>
-                <th> Autor </th>
-                <th> Editorial </th>
-                <th>  </th>
-                <th>  </th>
-              </tr>
-            </thead>
-    {this.state.data.map(nombre =>{
-      return(
-        <>
-         <tr>
-         <td>{nombre._id}</td>
-         <td>{nombre.tituloLibro}</td>
-          <td>{nombre.description}</td>
-          <td>{nombre.categoria}</td>
-          <td>{nombre.autores}</td>
-          <td>{nombre.editorial}</td>
-          <td>
-            <button className="btn btn-primary" onClick={()=>{this.seleccionarEmpresa(nombre); this.modalInsertar()}}><i class="fas fa-edit"></i></button>
-          </td>
-          <td>
-            <button className="btn btn-danger" onClick={()=>{this.seleccionarEmpresa(nombre); this.setState({modalEliminar: true})}}><i class="fas fa-trash-alt"></i></button>
-          </td>
-         </tr>
-        </>)})}
-      </table>
-      </div>
-          <Modal isOpen={this.state.modalInsertar}>
-                <ModalHeader style={{display: 'block'}}>
-                  <span style={{float: 'right'}} onClick={()=>this.modalInsertar()}>x</span>
-                </ModalHeader>
-                <ModalBody>
-                  <div className="form-group">
-                    <label htmlFor="id">ID</label>
-                      <input className="form-control" type="text" name="_id" id="_id" readOnly onChange={this.handleChange} value={form?form._id: this.state.data.length+1}/>
-                    <br />
-                    <label htmlFor="nombre">Titulo del Libro</label>
-                    <input className="form-control" type="text" name="tituloLibro" id="tituloLibro" onChange={this.handleChange} value={form?form.tituloLibro: ''}/>
-                    <br />
-                    <label htmlFor="nombre">Description</label>
-                    <input className="form-control" type="text" name="description" id="description" onChange={this.handleChange} value={form?form.description: ''}/>
-                    <br />
-                    <label htmlFor="nombre">Categoria</label>
-                    <input className="form-control" type="text" name="categoria" id="categoria" onChange={this.handleChange} value={form?form.categoria: ''}/>
-                    <br />
-                    <label htmlFor="nombre">Autor</label>
-                    <input className="form-control" type="text" name="autores" id="autores" onChange={this.handleChange} value={form?form.autores: ''}/>
-                    <br />
-                    <label htmlFor="capital_bursatil">Editorial</label>
-                    <input className="form-control" type="text" name="editorial" id="editorial" onChange={this.handleChange} value={form?form.editorial:''}/>
-                  </div>
-
-                </ModalBody>
-
-                <ModalFooter>
-                  {this.state.tipoModal=='insertar'?
-                    <button className="btn btn-success" onClick={()=>this.peticionPost()}>
-                    Insertar
-                  </button>: <button className="btn btn-primary" onClick={()=>this.peticionPut()}>
-                    Actualizar
-                  </button>
-                  }
-                    <button className="btn btn-danger" onClick={()=>this.modalInsertar()}>Cancelar</button>
-                </ModalFooter>
-          </Modal>
-          <Modal isOpen={this.state.modalEliminar}>
-            <ModalBody>
-               Estás seguro que deseas eliminar a el libro {form && form.nombre}
-            </ModalBody>
-            <ModalFooter>
-              <button className="btn btn-danger" onClick={()=>this.peticionDelete()}>Sí</button>
-              <button className="btn btn-secundary" onClick={()=>this.setState({modalEliminar: false})}>No</button>
-            </ModalFooter>
-          </Modal>
-
-
-    </>
-    )
+        <Container>
+          <h1 className="title-cards"> Inicio de sesión </h1>
+          <div class="col-md-12">
+                <h2 class="title-cards"> </h2>
+            </div>
+          <div class="row">
+          <div class="col-md-7 p-4 mb-3">
+          <div className="form-group">
+            <label htmlFor="id"> Nombre de Usuario </label>
+            <input className="form-control" type="text" name="username" id="username" onChange={this.handleChange} placeholder="Escribir su nombre de Usuario" required/>
+            <br />
+            <label htmlFor="nombre"> Contraseña </label>
+            <input className="form-control" type="password" name="password" id="password" onChange={this.handleChange} placeholder="Escribir su contraseña" required/>
+            </div>
+            <div className="form-group">
+              <select
+                name="TipUser"
+                className="form-control"
+                id="TipUser"
+                onChange={this.handleChange}
+              >
+                <option value="Seleccione" header> Seleccione su tipo de usuario </option>
+                <option value="Cliente"> Cliente </option>
+                <option value="Administrador"> Administrador </option>
+              </select>
+            </div>
+            <br/>
+            <button className="btn btn-primary form-control" onClick={()=>this.IniciarSesion()}> Iniciar Sesión </button>
+            <br/>
+          </div>
+          <div class="col-md-5 ml-auto">
+            <div class="p-4 border mb-3">
+              <center> <img src={logo} width="200"/> </center>
+            </div>
+            <div class="p-4 border mb-3">
+              <p class="">  Bienvenido, Inicia sesión para poder descargar nuestro contenido. </p>
+            </div>
+          </div>
+        </div>
+        </Container>
+      </>
+    );
   }
 };
 
