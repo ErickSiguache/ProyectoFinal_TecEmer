@@ -2,6 +2,9 @@ import React from 'react';
 import '../../App.css';
 import logo from '../../images/logo.png';
 import 'bootstrap/dist/css/bootstrap.css';
+import Cookies from 'universal-cookie';
+
+const cookies = new Cookies();
 
 export default function Home() {
   return (

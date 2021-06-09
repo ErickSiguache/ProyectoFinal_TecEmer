@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import '../../App.css';
+import Card from 'react-bootstrap/Card';
+import { Link } from 'react-router-dom';
 
 let url="http://127.0.0.1:8000/api/libro/";
 
@@ -23,32 +25,33 @@ class Bibloteca extends Component {
           console.log(error)
         })
   }
-
-
   render() {
     return(
       <>
         <div className="title-cards">
-          <h2>Libros que Ofrecemos</h2>
+          <h1>Libros que Ofrecemos</h1>
         </div>
-        {this.state.data.map(nombre =>{
+        <div className="container">
+        <div class="row">
+          {this.state.data.map(nombre =>{
             return(
               <>
-                <div class="contenedor-card">
-                  <div class="card">
-                    <figure>
-                      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRZ9DMNFHxwZcfPXJrJeBMITxPMP3FMZk_ixXzTfzt4G_C-G058"></img>
-                    </figure>
-                    <div class="contenido-card">
-		                  <h3> {nombre.tituloLibro} </h3>
-		                  <p> {nombre.description} </p>
-		                  <a href="#">Leer Más</a>
-	                  </div>
-                  </div>
+                <div class="">
+                  <Card style={{ width: '18rem' }}><center>
+                    <Card.Img variant="top" src="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcRZ9DMNFHxwZcfPXJrJeBMITxPMP3FMZk_ixXzTfzt4G_C-G058" />
+                    <Card.Body>
+                      <Card.Title> {nombre.tituloLibro} </Card.Title>
+                      <Card.Text> {nombre.description}  </Card.Text>
+                      <Link to={`/InfoLibros/${nombre._id}`}> Leer Mas </Link>
+                    </Card.Body></center>
+                  </Card>
                 </div>
               </>
             )
-        })}
+          })}
+        </div>
+      </div>
+        
     </>
 
     )
