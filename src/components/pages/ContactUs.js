@@ -23,7 +23,7 @@ class ContactUs extends Component {
                 <textarea className="form-control" id="exampleFormControlTextarea1" rows="3" required></textarea>
               </div>
               <div className="mb-3">
-                <label for="exampleFormControlInput1" className="form-label">Email address</label>
+                <label for="exampleFormControlInput1" className="form-label">Tu Mensaje</label>
                 <input type="submit" className="btn btn-primary form-control" id="exampleFormControlInput1" value="Enviar Datos"></input>
               </div>
             </form>
